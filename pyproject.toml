@@ -1,0 +1,19 @@
+[project]
+name = "comfyui-dailies"
+version = "0.1.0"
+description = "Write a take.json lineage sidecar beside every video ComfyUI renders: content hash, seeds, models, LoRAs, prompt, resolved graph."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Liz Zhang", email = "hello.liz.zhang@gmail.com" }]
+requires-python = ">=3.9"
+dependencies = ["video-dailies @ git+https://github.com/zhang-liz/dailies"]
+keywords = ["comfyui", "video", "lineage", "metadata", "sidecar", "qc", "dailies"]
+
+[project.urls]
+Repository = "https://github.com/zhang-liz/comfyui-dailies"
+Issues = "https://github.com/zhang-liz/comfyui-dailies/issues"
+
+[tool.comfy]
+PublisherId = "zhang-liz"
+DisplayName = "Dailies"
+Icon = ""
