@@ -99,3 +99,50 @@ def _resolver():
                 return p
         return None
     return resolve
+
+
+class WriteTake:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {},
+            "optional": {
+                "filenames": ("VHS_FILENAMES",),
+                "video_path": ("STRING", {"default": "", "tooltip": "Clip path, absolute or relative to the output folder. Ignored when filenames is connected."}),
+                "video_info": ("VHS_VIDEOINFO",),
+                "shot": ("STRING", {"default": "", "tooltip": "Shot name, groups takes for ranking."}),
+                "parent": ("STRING", {"default": "", "tooltip": "take_id this is a rerun of."}),
+                "hash_models": ("BOOLEAN", {"default": False, "tooltip": "Content-hash model and LoRA files. Slow on big weights."}),
+            },
+            "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("sidecar_path",)
+    FUNCTION = "write"
+    OUTPUT_NODE = True
+    CATEGORY = "dailies"
+    DESCRIPTION = "Writes <clip>.take.json beside the clip: content hash, seeds, models, LoRAs, prompt, resolved graph. Preserves any review block already there."
+
+    @classmethod
+    def IS_CHANGED(cls, **kw):
+        return float("nan")
+
+    def write(self, video_path="", filenames=None, video_info=None, shot="", parent="",
+              hash_models=False, prompt=None, extra_pnginfo=None):
+        path = _pick_path(video_path, filenames)
+        take = load(path)
+        take["take_id"] = hash_file(path)
+        take["created"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        take["shot"] = (shot or "").strip() or take.get("shot")
+        take["parent"] = (parent or "").strip() or take.get("parent")
+        take["output"] = _output_block(path, video_info)
+        rec = recipe.extract(prompt, resolve=_resolver() if hash_models else None)
+        rec["env"] = recipe.env()
+        take["recipe"] = rec
+        sidecar = save(path, take)
+        return {"ui": {"text": [sidecar]}, "result": (sidecar,)}
+
+
+NODE_CLASS_MAPPINGS = {"DailiesWriteTake": WriteTake}
+NODE_DISPLAY_NAME_MAPPINGS = {"DailiesWriteTake": "Dailies: Write take.json"}
