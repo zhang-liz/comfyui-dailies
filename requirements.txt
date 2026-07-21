@@ -1,0 +1,1 @@
+video-dailies @ git+https://github.com/zhang-liz/dailies
