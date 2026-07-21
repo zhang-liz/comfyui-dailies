@@ -24,3 +24,39 @@ def _is_link(v):
 
 def _inputs(node):
     return node.get("inputs") or {}
+
+
+def _text_behind(graph, nid, depth=0):
+    """First string "text" input reachable from nid, following links."""
+    node = graph.get(nid)
+    if node is None or depth > MAX_LINK_DEPTH:
+        return None
+    inputs = _inputs(node)
+    t = inputs.get("text")
+    if isinstance(t, str):
+        return t
+    for v in inputs.values():
+        if _is_link(v):
+            found = _text_behind(graph, v[0], depth + 1)
+            if found is not None:
+                return found
+    return None
+
+
+def prompt_text(graph):
+    """Flattened positive prompt: texts behind every "positive" link, deduped,
+    joined by newlines. Falls back to the first CLIPTextEncode text."""
+    texts = []
+    for node in graph.values():
+        pos = _inputs(node).get("positive")
+        if _is_link(pos):
+            t = _text_behind(graph, pos[0])
+            if t and t not in texts:
+                texts.append(t)
+    if texts:
+        return "\n".join(texts)
+    for node in graph.values():
+        t = _inputs(node).get("text")
+        if isinstance(t, str) and "TextEncode" in node.get("class_type", ""):
+            return t
+    return None
