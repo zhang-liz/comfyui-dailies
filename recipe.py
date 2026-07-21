@@ -60,3 +60,80 @@ def prompt_text(graph):
         if isinstance(t, str) and "TextEncode" in node.get("class_type", ""):
             return t
     return None
+
+
+def _hasher(resolve):
+    if resolve is None:
+        return lambda name: None
+    from dailies.take import hash_file
+    cache = {}
+
+    def hash_name(name):
+        if name in cache:
+            return cache[name]
+        path = resolve(name)
+        cache[name] = hash_file(path) if path else None
+        return cache[name]
+    return hash_name
+
+
+def extract(graph, resolve=None):
+    """The "recipe" block of take.json, minus env.
+
+    resolve: optional callable name -> absolute path (or None). When given,
+    every model and LoRA file it resolves is content-hashed. Hashing multi-GB
+    weights is slow, so callers opt in.
+    """
+    graph = graph or {}
+    hash_name = _hasher(resolve)
+    models, loras, conditioning, seeds = [], [], [], {}
+    seen = set()
+    for nid, node in graph.items():
+        ct = node.get("class_type", "")
+        inputs = _inputs(node)
+        for key, v in inputs.items():
+            if key in SEED_KEYS and isinstance(v, int) and not isinstance(v, bool):
+                seeds[nid] = v
+                continue
+            if not isinstance(v, str):
+                continue
+            low = v.lower()
+            if low.endswith(MODEL_EXT):
+                if (v, ct) in seen:
+                    continue
+                seen.add((v, ct))
+                if "lora" in ct.lower() or "lora" in key.lower():
+                    strength = next((inputs[k] for k in STRENGTH_KEYS if k in inputs), None)
+                    loras.append({"file": v, "sha256": hash_name(v), "strength": strength})
+                else:
+                    models.append({"file": v, "sha256": hash_name(v), "loader": ct})
+            elif low.endswith(MEDIA_EXT):
+                conditioning.append({"role": ct, "file": v, "sha256": None})
+    return {
+        "workflow": graph,
+        "models": models,
+        "loras": loras,
+        "conditioning": conditioning,
+        "seeds": seeds,
+        "prompt_text": prompt_text(graph),
+    }
+
+
+def env():
+    """Runtime the take was rendered in. Every field is best effort."""
+    out = {"comfyui": None, "torch": None, "gpu": None, "platform": platform.platform()}
+    try:
+        import comfyui_version
+        out["comfyui"] = getattr(comfyui_version, "__version__", None)
+    except Exception:
+        pass
+    try:
+        import torch
+        out["torch"] = torch.__version__
+        if torch.cuda.is_available():
+            out["gpu"] = torch.cuda.get_device_name(0)
+        elif getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+            out["gpu"] = "Apple MPS"
+    except Exception:
+        pass
+    return out
