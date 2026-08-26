@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 (2026-08-26)
+
+- Registry listing: display name, description, icon, OS classifier, links. No code change.
+
 ## 0.1.1 (2026-08-26)
 
 - Clearer registry description and display name. No code change.
