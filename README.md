@@ -98,6 +98,15 @@ python3 -m unittest discover tests
 
 No ComfyUI needed. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Learn more
+
+Guides from [The Multimodal Society](https://multimodalsociety.com):
+
+- [Overnight AI video triage with dailies](https://multimodalsociety.com/blog/overnight-dailies): generate 40 takes overnight, wake to a ranked shortlist. The workflow this node feeds.
+- [How to make an AI short film, step by step](https://multimodalsociety.com/blog/ai-short-film-pipeline): the full pipeline, and where take records keep it reproducible.
+- [Consistent AI characters across shots](https://multimodalsociety.com/blog/consistent-ai-characters): reference sets, LoRAs and conditioning. Every input this node logs per take.
+- [The 10 days AI video went open-weight](https://multimodalsociety.com/blog/video-went-open-weight): why local models in ComfyUI need their own yield records.
+
 ## License
 
 MIT.
