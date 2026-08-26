@@ -7,6 +7,19 @@ Render 50 takes overnight and one is right. Which seed, model, LoRA and prompt m
 
 Format: [take.json spec](https://github.com/zhang-liz/dailies/blob/main/SPEC.md). Reader: the [dailies](https://github.com/zhang-liz/dailies) triage CLI.
 
+## Why
+
+Video generation is a numbers game: 20 to 50 takes per usable shot. The metadata that explains a take dies at save time.
+
+| Pain | What this fixes |
+|---|---|
+| The good take is in the output folder, the recipe is gone. Seeds, LoRA strengths and prompt edits are scattered across nodes you have since changed. | Every take carries its own recipe. Reproduce or rerun any clip weeks later. |
+| The workflow is embedded in the MP4. Not greppable, not diffable, not readable by other tools. | Plain JSON beside the file. `grep`, `jq`, a spreadsheet, or the [dailies](https://github.com/zhang-liz/dailies) CLI all read it. |
+| Ranking a night of renders means opening each one and guessing what made it. | `dailies review` ranks the folder, kills the dead takes with reasons, and writes its verdict into the same file. |
+| Reruns lose their history. Nobody knows take 31 came from take 12. | `parent` links a rerun to its source. Lineage is a chain of pointers, no database. |
+| Model updates every few weeks stale your results and nobody can say which model made what. | Model and LoRA filenames per take, content hashes on request. |
+
+
 ## Install
 
 ComfyUI Manager: search **dailies**, install, restart.
