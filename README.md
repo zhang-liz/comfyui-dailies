@@ -3,17 +3,15 @@
 [![Tests](https://github.com/zhang-liz/comfyui-dailies/actions/workflows/test.yml/badge.svg)](https://github.com/zhang-liz/comfyui-dailies/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Lineage sidecars for every video ComfyUI renders.
+A ComfyUI node that writes a `take.json` beside every video you render. It records the seeds, models, LoRAs, prompt, resolved graph, and runtime that made the clip. Plain JSON, next to the file.
 
-One node, **Dailies: Write take.json**. Put it after your video save node and each clip leaves the graph with a `<clip>.take.json` beside it: content hash, seeds, models, LoRAs, positive prompt, the resolved graph, and the runtime it rendered on. Plain JSON, next to the file, readable by anything.
-
-Generation metadata is lost at save time. The workflow embedded in an MP4 container is not greppable, and seeds, model files, and prompts scatter across nodes. This keeps them, per take, in the open [take.json](https://github.com/zhang-liz/dailies/blob/main/SPEC.md) format that the [dailies](https://github.com/zhang-liz/dailies) triage CLI reads and writes. Any tool can add its own block; this node never touches the others.
+Format: [take.json spec](https://github.com/zhang-liz/dailies/blob/main/SPEC.md). Reader: the [dailies](https://github.com/zhang-liz/dailies) triage CLI.
 
 ## Install
 
-**ComfyUI Manager:** search `dailies`, install, restart.
+ComfyUI Manager: search **dailies**, install, restart.
 
-**Manual:**
+Manual:
 
 ```sh
 cd ComfyUI/custom_nodes
@@ -21,31 +19,32 @@ git clone https://github.com/zhang-liz/comfyui-dailies
 pip install -r comfyui-dailies/requirements.txt
 ```
 
-Restart ComfyUI. Optional: `ffprobe` on PATH fills fps, frames, width, and height when no `VHS_VIDEOINFO` is connected.
+Restart ComfyUI.
 
 ## Use
 
-Add **Dailies: Write take.json** (category `dailies`) and give it the clip:
+1. Add the node **Dailies: Write take.json** (category `dailies`).
+2. Give it the clip. Either:
+   - connect `filenames` from **Video Combine** (VideoHelperSuite), or
+   - type `video_path`, relative to the output folder (works with the core **Save Video** node).
+3. Queue the prompt. `<clip>.take.json` appears next to the video.
 
-- Connect `filenames` from **Video Combine** (VideoHelperSuite). Preferred; no typing.
-- Or type `video_path`, relative to the output folder or absolute. Works with the core **Save Video** node.
-
-Optional inputs:
-
-| Input | What it does |
-|---|---|
-| `video_info` | `VHS_VIDEOINFO` from a VHS loader, for fps, frames, width, height |
-| `shot` | Groups takes for ranking in `dailies review` |
-| `parent` | `take_id` of the take this one reruns |
-| `hash_models` | Content-hash model and LoRA files. Slow on multi-GB weights. Off by default |
-
-Output: `sidecar_path`, the path of the JSON written.
-
-Then:
+Then, from a terminal:
 
 ```sh
 dailies review ComfyUI/output/ --shot shot-07
 ```
+
+### Optional inputs
+
+| Input | Use |
+|---|---|
+| `video_info` | `VHS_VIDEOINFO` from a VHS loader. Fills fps, frames, width, height. Without it, `ffprobe` on PATH does the same. |
+| `shot` | Shot name. Groups takes for ranking. |
+| `parent` | `take_id` of the take this one reruns. |
+| `hash_models` | Content-hash the model and LoRA files. Slow on big weights. Off by default. |
+
+Output: `sidecar_path`, the JSON path.
 
 ## What it writes
 
@@ -63,35 +62,28 @@ dailies review ComfyUI/output/ --shot shot-07
     "conditioning": [ { "role": "LoadImage", "file": "ref_myrna.png", "sha256": null } ],
     "seeds": { "6": 424242 },
     "prompt_text": "a woman lifts a cup, warm kitchen light",
-    "env": { "comfyui": "0.8.32", "torch": "2.9.1", "gpu": "Apple MPS", "platform": "macOS-15.4-arm64" }
+    "env": { "comfyui": "0.8.32", "torch": "2.9.1", "gpu": "Apple MPS" }
   },
   "review": null
 }
 ```
 
-`review` and `gold` belong to the reviewer and the human. If they exist, they are kept as is. Unknown keys from any other tool are kept too.
+The node writes `recipe` and the identity fields only. `review`, `gold`, and blocks from other tools are kept as is.
 
-Extraction does not depend on node class names. Models are found by file extension, seeds by input name (`seed`, `noise_seed`), the prompt by following `positive` links back to a text encoder. New loaders and samplers work without a code change.
+Extraction does not depend on node names. Models are found by file extension, seeds by input name, the prompt by following `positive` links. New loaders and samplers work without a code change.
 
 ## Roadmap
 
-- **Gate node:** judge a clip after decode, with `pass` and `kill` outputs so expensive post-processing runs on keepers only. Wraps an open video reward model; the calibrated threshold comes from `dailies calibrate`.
-- **Regen driver:** requeue killed takes with new seeds under a budget cap.
+- Gate node: `pass` and `kill` outputs after a judge, so post-processing runs on keepers only.
+- Regen driver: requeue kills with new seeds under a budget cap.
 
-Issues and PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Test
+## Develop
 
 ```sh
 python3 -m unittest discover tests
 ```
 
-No ComfyUI needed. `ffmpeg` on PATH enables one extra test.
-
-## Related
-
-- [dailies](https://github.com/zhang-liz/dailies): the triage CLI and the owner of the sidecar spec
-- [VideoHelperSuite](https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite): the `filenames` and `video_info` sockets this node accepts
+No ComfyUI needed. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
