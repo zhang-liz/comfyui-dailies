@@ -3,7 +3,7 @@
 [![Tests](https://github.com/zhang-liz/comfyui-dailies/actions/workflows/test.yml/badge.svg)](https://github.com/zhang-liz/comfyui-dailies/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A ComfyUI node that writes a `take.json` beside every video you render. It records the seeds, models, LoRAs, prompt, resolved graph, and runtime that made the clip. Plain JSON, next to the file.
+Render 50 takes overnight and one is right. Which seed, model, LoRA and prompt made it? ComfyUI does not say. This node writes a `take.json` beside every video it renders, so any take can be found, reproduced or rerun later, and a night of renders can be ranked without reopening ComfyUI. Plain JSON, next to the file.
 
 Format: [take.json spec](https://github.com/zhang-liz/dailies/blob/main/SPEC.md). Reader: the [dailies](https://github.com/zhang-liz/dailies) triage CLI.
 
