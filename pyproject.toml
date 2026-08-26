@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-dailies"
-version = "0.1.0"
-description = "Write a take.json lineage sidecar beside every video ComfyUI renders: content hash, seeds, models, LoRAs, prompt, resolved graph."
+version = "0.1.1"
+description = "Saves a take.json next to each rendered video with the seeds, models, LoRAs, prompt and workflow that made it. Lineage for AI video, readable by any tool."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "Liz Zhang", email = "hello.liz.zhang@gmail.com" }]
@@ -24,5 +24,5 @@ Spec = "https://github.com/zhang-liz/dailies/blob/main/SPEC.md"
 
 [tool.comfy]
 PublisherId = "zhang-liz"
-DisplayName = "Dailies"
+DisplayName = "Dailies: take.json lineage"
 Icon = ""

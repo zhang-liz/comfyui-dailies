@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1 (2026-08-26)
+
+- Clearer registry description and display name. No code change.
+
 ## 0.1.0 (2026-08-26)
 
 First release. One node, **Dailies: Write take.json**.
