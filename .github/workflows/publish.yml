@@ -1,9 +1,11 @@
 name: Publish to Comfy registry
 
 # Publish a GitHub release tagged v<version> to publish that version.
+# If a publish fails, run this workflow by hand from main to try again.
 # Needs a REGISTRY_ACCESS_TOKEN repository secret from registry.comfy.org.
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
@@ -24,6 +26,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Check the tag matches pyproject.toml
+        if: github.event_name == 'release'
         env:
           TAG: ${{ github.event.release.tag_name }}
         run: |
@@ -32,6 +35,7 @@ jobs:
             echo "::error::Tag $TAG does not match pyproject.toml version $version"
             exit 1
           fi
-      - uses: Comfy-Org/publish-node-action@7578cdb0c1410f2515e6f9b1443c6859cab94f05 # 1.0.1
+      # The 1.0.1 tag is from 2024 and calls a comfy-cli option that no longer exists.
+      - uses: Comfy-Org/publish-node-action@d2366e7abb6ab16f3bb03e3520ae25c8cf749bc9 # main
         with:
           personal_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
