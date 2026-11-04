@@ -29,7 +29,7 @@ To try a change live, symlink the checkout into `ComfyUI/custom_nodes/` and rest
 
 - One change per PR.
 - Short subject line, body only when the diff does not explain itself.
-- CI runs `ruff check .` and the tests on Python 3.9 to 3.14.
+- CI runs `ruff check .` and the tests on Python 3.9 and 3.14. Docs-only changes run nothing.
 
 ## Releasing
 

@@ -1,9 +1,12 @@
 name: Tests
 
+# Docs-only changes run nothing. PRs skip the slow ffmpeg install.
 on:
   push:
     branches: [main]
+    paths-ignore: ["**.md", "LICENSE", "icon.svg"]
   pull_request:
+    paths-ignore: ["**.md", "LICENSE", "icon.svg"]
   workflow_call:
 
 permissions:
@@ -31,12 +34,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        # Oldest and newest supported. Python 3.9 is not built for ubuntu-latest (26.04).
         include:
-          # Python 3.9 is not built for ubuntu-latest (26.04).
           - os: ubuntu-24.04
             python: "3.9"
+          - os: ubuntu-latest
+            python: "3.14"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -47,7 +50,7 @@ jobs:
           cache: pip
       # One test needs ffmpeg, and the Ubuntu mirror can take minutes to send it.
       - name: Install ffmpeg
-        if: matrix.python == '3.12'
+        if: matrix.python == '3.14' && github.event_name != 'pull_request'
         run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends ffmpeg
       - name: Install dependencies
         run: pip install -r requirements.txt
