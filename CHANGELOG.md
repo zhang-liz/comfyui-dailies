@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Depend on `video-dailies` from PyPI (`>=0.2,<0.3`), not an unpinned git URL.
+
 ## 0.1.3 (2026-08-26)
 
 - Description leads with the problem it solves. No code change.
