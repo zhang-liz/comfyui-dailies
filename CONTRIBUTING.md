@@ -37,3 +37,5 @@ To try a change live, symlink the checkout into `ComfyUI/custom_nodes/` and rest
 2. Publish a GitHub release tagged `v<version>`, for example `v0.1.4`.
 
 The publish workflow runs the tests, checks the tag against `pyproject.toml`, and pushes the new version to the Comfy registry.
+
+If a publish fails, fix the cause on main, then run **Publish to Comfy registry** by hand from the Actions tab.
