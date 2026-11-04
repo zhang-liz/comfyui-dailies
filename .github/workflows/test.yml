@@ -27,7 +27,7 @@ jobs:
 
   test:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -45,8 +45,10 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           cache: pip
+      # One test needs ffmpeg, and the Ubuntu mirror can take minutes to send it.
       - name: Install ffmpeg
-        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+        if: matrix.python == '3.12'
+        run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends ffmpeg
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run tests
