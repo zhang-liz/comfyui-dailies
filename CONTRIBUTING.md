@@ -13,6 +13,8 @@ python3 -m unittest discover tests
 
 Tests need no ComfyUI; `folder_paths` is stubbed in `tests/test_node.py`. With `ffmpeg` on PATH one more test runs.
 
+Lint with [ruff](https://docs.astral.sh/ruff/): `ruff check .`
+
 To try a change live, symlink the checkout into `ComfyUI/custom_nodes/` and restart ComfyUI.
 
 ## Ground rules
@@ -27,8 +29,11 @@ To try a change live, symlink the checkout into `ComfyUI/custom_nodes/` and rest
 
 - One change per PR.
 - Short subject line, body only when the diff does not explain itself.
-- CI runs the tests on Python 3.9 and 3.12.
+- CI runs `ruff check .` and the tests on Python 3.9 to 3.14.
 
 ## Releasing
 
-Bump `version` in `pyproject.toml`, add a line to `CHANGELOG.md`, merge to main. The publish workflow pushes the new version to the Comfy registry.
+1. Bump `version` in `pyproject.toml`, add a line to `CHANGELOG.md`, merge to main.
+2. Publish a GitHub release tagged `v<version>`, for example `v0.1.4`.
+
+The publish workflow runs the tests, checks the tag against `pyproject.toml`, and pushes the new version to the Comfy registry.

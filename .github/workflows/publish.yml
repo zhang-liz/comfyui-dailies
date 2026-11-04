@@ -1,20 +1,37 @@
 name: Publish to Comfy registry
 
-# Bump [project].version in pyproject.toml on main and this publishes it.
+# Publish a GitHub release tagged v<version> to publish that version.
 # Needs a REGISTRY_ACCESS_TOKEN repository secret from registry.comfy.org.
 
 on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ["pyproject.toml"]
+  release:
+    types: [published]
+
+permissions:
+  contents: read
 
 jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+
   publish-node:
     name: Publish custom node to registry
+    needs: test
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: Comfy-Org/publish-node-action@main
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check the tag matches pyproject.toml
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          if [ "$TAG" != "v$version" ]; then
+            echo "::error::Tag $TAG does not match pyproject.toml version $version"
+            exit 1
+          fi
+      - uses: Comfy-Org/publish-node-action@7578cdb0c1410f2515e6f9b1443c6859cab94f05 # 1.0.1
         with:
           personal_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
