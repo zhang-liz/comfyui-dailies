@@ -1,0 +1,9 @@
+target-version = "py39"
+
+[lint]
+# S102 and S307 enforce the Comfy Registry ban on exec and eval.
+select = ["E", "F", "W", "I", "B", "UP", "S102", "S307"]
+ignore = ["E501"]
+
+[lint.per-file-ignores]
+"tests/*" = ["E402"]
