@@ -1,1 +1,1 @@
-video-dailies @ git+https://github.com/zhang-liz/dailies
+video-dailies>=0.2,<0.3
