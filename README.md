@@ -22,6 +22,8 @@ Video generation is a numbers game: 20 to 50 takes per usable shot. The metadata
 
 ## Install
 
+Download: [Dailies Take Recorder on the Comfy Registry](https://registry.comfy.org/nodes/comfyui-dailies).
+
 ComfyUI Manager: search **dailies**, install, restart.
 
 Manual:
