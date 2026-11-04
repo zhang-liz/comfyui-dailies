@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.1.4 (2026-11-04)
 
 - Depend on `video-dailies` from PyPI (`>=0.2,<0.3`), not an unpinned git URL.
+- README links the Comfy Registry page. No other code change.
 
 ## 0.1.3 (2026-08-26)
 

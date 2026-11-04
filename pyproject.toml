@@ -1,6 +1,6 @@
 [project]
 name = "comfyui-dailies"
-version = "0.1.3"
+version = "0.1.4"
 description = "Never lose which seed, model, LoRA and prompt made a clip. Writes a take.json beside every rendered video so any take can be found, reproduced or rerun later, and a night of renders can be ranked without reopening ComfyUI."
 readme = "README.md"
 license = { file = "LICENSE" }
